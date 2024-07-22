@@ -188,7 +188,23 @@ class MusixmatchLyricsRepository: LyricsRepository {
                let subtitlesTranslated = try? JSONDecoder().decode(
                     [MusixmatchSubtitle].self, from: subtitleTranslatedBody.data(using: .utf8)!
                ) {
-                
+                if subtitleTranslatedBody.isEmpty
+                {
+                    romanized = true
+                    selectedLanguage = romanizationLanguage
+                    if let translations = try? getTranslations(
+                        query.spotifyTrackId,
+                        selectedLanguage: romanizationLanguage
+                    ) { 
+                        for (original, translation) in translations {
+                            for i in 0..<lyricsLines.count {
+                                if lyricsLines[i].content == original {
+                                    lyricsLines[i].content = translation
+                                }
+                            }
+                        }
+                    }
+                }
                 if selectedLanguage == romanizationLanguage {
                     romanized = true
                     
